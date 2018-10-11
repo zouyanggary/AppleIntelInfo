@@ -3268,6 +3268,17 @@ typedef enum {
 
 #define BLC_PWM_PCH_CTL2        0xc8254
 
+/* BXT backlight register definition. */
+#define _BXT_BLC_PWM_CTL1		0xC8250
+#define   BXT_BLC_PWM_ENABLE	(1 << 31)
+#define   BXT_BLC_PWM_POLARITY	(1 << 29)
+#define _BXT_BLC_PWM_FREQ1		0xC8254
+#define _BXT_BLC_PWM_DUTY1		0xC8258
+
+#define _BXT_BLC_PWM_CTL2		0xC8350
+#define _BXT_BLC_PWM_FREQ2		0xC8354
+#define _BXT_BLC_PWM_DUTY2		0xC8358
+
 #define PCH_PP_STATUS           0xc7200
 #define PCH_PP_CONTROL          0xc7204
 #define  EDP_FORCE_VDD          (1 << 3)

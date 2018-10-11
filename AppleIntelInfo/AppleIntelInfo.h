@@ -50,7 +50,7 @@
 #define REPORT_IGPU_P_STATES	1
 #define REPORT_C_STATES			1
 #define REPORT_IPG_STYLE		1
-#define REPORT_INTEL_REGS		0
+#define REPORT_INTEL_REGS		1
 
 #define ENABLE_HWP				1
 

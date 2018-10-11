@@ -339,7 +339,7 @@ DEBUGSTRING(i830_debug_pipeconf)
 	const char *interlace = NULL;
     int interlace_mode;
 	char buf[256];
-	int buf_len;
+	int buf_len = 0;
 
 	if (IS_965(devid))
 	{
@@ -352,8 +352,6 @@ DEBUGSTRING(i830_debug_pipeconf)
 
 	if (HAS_PCH_SPLIT(devid) || IS_BROXTON(devid))
 	{
-		
-        
         if (IS_IVYBRIDGE(devid) || IS_HASWELL(devid) || IS_BROADWELL(devid) || IS_GEN9(devid))
         {
             interlace_mode = (val >> 21) & 3;
@@ -741,6 +739,41 @@ DEBUGSTRING(hsw_debug_blc_misc_ctl)
 	sel = (val & 1) ? "PWM1-CPU PWM2-PCH" : "PWM1-PCH PWM2-CPU";
 
 	snprintf(result, len, "%s", sel);
+}
+
+//------------------------------------------------------------------------------
+
+DEBUGSTRING(_bxt_blc_pwm_ctl)
+{
+	int enable, inverted_polarity;
+	
+	enable = (val >> 31) & 1;
+	inverted_polarity = (val >> 29) & 1;
+	
+	snprintf(result, len, "enable %d, inverted polarity %d",
+			 enable, inverted_polarity);
+}
+
+//------------------------------------------------------------------------------
+
+DEBUGSTRING(_bxt_blc_pwm_freq)
+{
+	int freq;
+	
+	freq = val & 0xFFFF;
+	
+	snprintf(result, len, "freq %d", freq);
+}
+
+//------------------------------------------------------------------------------
+
+DEBUGSTRING(_bxt_blc_pwm_duty)
+{
+	int duty;
+	
+	duty = val & 0xFFFF;
+	
+	snprintf(result, len, "duty %d", duty);
 }
 
 //------------------------------------------------------------------------------
@@ -2812,6 +2845,202 @@ static struct reg_debug skylake_debug_regs[] = {
 
 //------------------------------------------------------------------------------
 
+static struct reg_debug coffeelake_debug_regs[] = {
+	/* Power wells */
+	DEFINEREG(HSW_PWR_WELL_CTL1),
+	DEFINEREG(HSW_PWR_WELL_CTL2),
+	DEFINEREG(HSW_PWR_WELL_CTL3),
+	DEFINEREG(HSW_PWR_WELL_CTL4),
+	DEFINEREG(HSW_PWR_WELL_CTL5),
+	DEFINEREG(HSW_PWR_WELL_CTL6),
+	
+	/* DDI pipe function */
+	DEFINEREG2(PIPE_DDI_FUNC_CTL_A, hsw_debug_pipe_ddi_func_ctl),
+	DEFINEREG2(PIPE_DDI_FUNC_CTL_B, hsw_debug_pipe_ddi_func_ctl),
+	DEFINEREG2(PIPE_DDI_FUNC_CTL_C, hsw_debug_pipe_ddi_func_ctl),
+	DEFINEREG2(PIPE_DDI_FUNC_CTL_EDP, hsw_debug_pipe_ddi_func_ctl),
+	
+	/* DP transport control */
+	DEFINEREG(DP_TP_CTL_A),
+	DEFINEREG(DP_TP_CTL_B),
+	DEFINEREG(DP_TP_CTL_C),
+	DEFINEREG(DP_TP_CTL_D),
+	DEFINEREG(DP_TP_CTL_E),
+	
+	/* DP status */
+	DEFINEREG(DP_TP_STATUS_A),
+	DEFINEREG(DP_TP_STATUS_B),
+	DEFINEREG(DP_TP_STATUS_C),
+	DEFINEREG(DP_TP_STATUS_D),
+	DEFINEREG(DP_TP_STATUS_E),
+	
+	/* DDI buffer control */
+	DEFINEREG2(DDI_BUF_CTL_A, hsw_debug_ddi_buf_ctl),
+	DEFINEREG2(DDI_BUF_CTL_B, hsw_debug_ddi_buf_ctl),
+	DEFINEREG2(DDI_BUF_CTL_C, hsw_debug_ddi_buf_ctl),
+	DEFINEREG2(DDI_BUF_CTL_D, hsw_debug_ddi_buf_ctl),
+	DEFINEREG2(DDI_BUF_CTL_E, hsw_debug_ddi_buf_ctl),
+	
+	/* Clocks */
+	DEFINEREG(SPLL_CTL),
+	DEFINEREG(LCPLL_CTL),
+	DEFINEREG(WRPLL_CTL1),
+	DEFINEREG(WRPLL_CTL2),
+	
+	/* DDI port clock control */
+	DEFINEREG2(PORT_CLK_SEL_A, hsw_debug_port_clk_sel),
+	DEFINEREG2(PORT_CLK_SEL_B, hsw_debug_port_clk_sel),
+	DEFINEREG2(PORT_CLK_SEL_C, hsw_debug_port_clk_sel),
+	DEFINEREG2(PORT_CLK_SEL_D, hsw_debug_port_clk_sel),
+	DEFINEREG2(PORT_CLK_SEL_E, hsw_debug_port_clk_sel),
+	
+	/* Pipe clock control */
+	DEFINEREG2(PIPE_CLK_SEL_A, hsw_debug_pipe_clk_sel),
+	DEFINEREG2(PIPE_CLK_SEL_B, hsw_debug_pipe_clk_sel),
+	DEFINEREG2(PIPE_CLK_SEL_C, hsw_debug_pipe_clk_sel),
+	
+	/* Fuses */
+	DEFINEREG2(SFUSE_STRAP, hsw_debug_sfuse_strap),
+	
+	/* Pipe A */
+	DEFINEREG2(PIPEASRC, i830_debug_yxminus1),
+	DEFINEREG2(DSPACNTR, i830_debug_dspcntr),
+	DEFINEREG2(DSPASTRIDE, ironlake_debug_dspstride),
+	DEFINEREG(DSPASURF),
+	DEFINEREG2(DSPATILEOFF, i830_debug_xy),
+	
+	/* Pipe B */
+	DEFINEREG2(PIPEBSRC, i830_debug_yxminus1),
+	DEFINEREG2(DSPBCNTR, i830_debug_dspcntr),
+	DEFINEREG2(DSPBSTRIDE, ironlake_debug_dspstride),
+	DEFINEREG(DSPBSURF),
+	DEFINEREG2(DSPBTILEOFF, i830_debug_xy),
+	
+	/* Pipe C */
+	DEFINEREG2(PIPECSRC, i830_debug_yxminus1),
+	DEFINEREG2(DSPCCNTR, i830_debug_dspcntr),
+	DEFINEREG2(DSPCSTRIDE, ironlake_debug_dspstride),
+	DEFINEREG(DSPCSURF),
+	DEFINEREG2(DSPCTILEOFF, i830_debug_xy),
+	
+	/* Transcoder A */
+	/* DEFINEREG2(PIPEACONF, i830_debug_pipeconf),
+	DEFINEREG2(HTOTAL_A, i830_debug_hvtotal),
+	DEFINEREG2(HBLANK_A, i830_debug_hvsyncblank),
+	DEFINEREG2(HSYNC_A, i830_debug_hvsyncblank),
+	DEFINEREG2(VTOTAL_A, i830_debug_hvtotal),
+	DEFINEREG2(VBLANK_A, i830_debug_hvsyncblank),
+	DEFINEREG2(VSYNC_A, i830_debug_hvsyncblank),
+	DEFINEREG(VSYNCSHIFT_A),
+	DEFINEREG2(PIPEA_DATA_M1, ironlake_debug_m_tu),
+	DEFINEREG2(PIPEA_DATA_N1, ironlake_debug_n),
+	DEFINEREG2(PIPEA_LINK_M1, ironlake_debug_n),
+	DEFINEREG2(PIPEA_LINK_N1, ironlake_debug_n), */
+	
+	/* Transcoder B */
+	/* DEFINEREG2(PIPEBCONF, i830_debug_pipeconf),
+	DEFINEREG2(HTOTAL_B, i830_debug_hvtotal),
+	DEFINEREG2(HBLANK_B, i830_debug_hvsyncblank),
+	DEFINEREG2(HSYNC_B, i830_debug_hvsyncblank),
+	DEFINEREG2(VTOTAL_B, i830_debug_hvtotal),
+	DEFINEREG2(VBLANK_B, i830_debug_hvsyncblank),
+	DEFINEREG2(VSYNC_B, i830_debug_hvsyncblank),
+	DEFINEREG(VSYNCSHIFT_B),
+	DEFINEREG2(PIPEB_DATA_M1, ironlake_debug_m_tu),
+	DEFINEREG2(PIPEB_DATA_N1, ironlake_debug_n),
+	DEFINEREG2(PIPEB_LINK_M1, ironlake_debug_n),
+	DEFINEREG2(PIPEB_LINK_N1, ironlake_debug_n), */
+	
+	/* Transcoder C */
+	/* DEFINEREG2(PIPECCONF, i830_debug_pipeconf),
+	DEFINEREG2(HTOTAL_C, i830_debug_hvtotal),
+	DEFINEREG2(HBLANK_C, i830_debug_hvsyncblank),
+	DEFINEREG2(HSYNC_C, i830_debug_hvsyncblank),
+	DEFINEREG2(VTOTAL_C, i830_debug_hvtotal),
+	DEFINEREG2(VBLANK_C, i830_debug_hvsyncblank),
+	DEFINEREG2(VSYNC_C, i830_debug_hvsyncblank),
+	DEFINEREG(VSYNCSHIFT_C),
+	DEFINEREG2(PIPEC_DATA_M1, ironlake_debug_m_tu),
+	DEFINEREG2(PIPEC_DATA_N1, ironlake_debug_n),
+	DEFINEREG2(PIPEC_LINK_M1, ironlake_debug_n),
+	DEFINEREG2(PIPEC_LINK_N1, ironlake_debug_n), */
+	
+	/* Transcoder EDP */
+	/* DEFINEREG2(PIPEEDPCONF, i830_debug_pipeconf),
+	DEFINEREG2(HTOTAL_EDP, i830_debug_hvtotal),
+	DEFINEREG2(HBLANK_EDP, i830_debug_hvsyncblank),
+	DEFINEREG2(HSYNC_EDP, i830_debug_hvsyncblank),
+	DEFINEREG2(VTOTAL_EDP, i830_debug_hvtotal),
+	DEFINEREG2(VBLANK_EDP, i830_debug_hvsyncblank),
+	DEFINEREG2(VSYNC_EDP, i830_debug_hvsyncblank),
+	DEFINEREG(VSYNCSHIFT_EDP),
+	DEFINEREG2(PIPEEDP_DATA_M1, ironlake_debug_m_tu),
+	DEFINEREG2(PIPEEDP_DATA_N1, ironlake_debug_n),
+	DEFINEREG2(PIPEEDP_LINK_M1, ironlake_debug_n),
+	DEFINEREG2(PIPEEDP_LINK_N1, ironlake_debug_n), */
+	
+	/* CPU Panel fitter */
+	/* DEFINEREG2(PFA_CTL_1, ironlake_debug_panel_fitting),
+	DEFINEREG2(PFA_WIN_POS, ironlake_debug_pf_win),
+	DEFINEREG2(PFA_WIN_SIZE, ironlake_debug_pf_win),
+	
+	DEFINEREG2(PFB_CTL_1, ironlake_debug_panel_fitting),
+	DEFINEREG2(PFB_WIN_POS, ironlake_debug_pf_win),
+	DEFINEREG2(PFB_WIN_SIZE, ironlake_debug_pf_win),
+	
+	DEFINEREG2(PFC_CTL_1, ironlake_debug_panel_fitting),
+	DEFINEREG2(PFC_WIN_POS, ironlake_debug_pf_win),
+	DEFINEREG2(PFC_WIN_SIZE, ironlake_debug_pf_win), */
+	
+	/* LPT */
+	DEFINEREG2(TRANS_HTOTAL_A, i830_debug_hvtotal),
+	DEFINEREG2(TRANS_HBLANK_A, i830_debug_hvsyncblank),
+	DEFINEREG2(TRANS_HSYNC_A, i830_debug_hvsyncblank),
+	DEFINEREG2(TRANS_VTOTAL_A, i830_debug_hvtotal),
+	DEFINEREG2(TRANS_VBLANK_A, i830_debug_hvsyncblank),
+	DEFINEREG2(TRANS_VSYNC_A, i830_debug_hvsyncblank),
+	DEFINEREG(TRANS_VSYNCSHIFT_A),
+	
+	DEFINEREG2(TRANSACONF, ironlake_debug_transconf),
+	
+	DEFINEREG2(FDI_RXA_MISC, ironlake_debug_fdi_rx_misc),
+	DEFINEREG(FDI_RXA_TUSIZE1),
+	DEFINEREG(FDI_RXA_IIR),
+	DEFINEREG(FDI_RXA_IMR),
+	
+	DEFINEREG2(BLC_PWM_CPU_CTL2, ilk_debug_blc_pwm_cpu_ctl2),
+	DEFINEREG2(BLC_PWM_CPU_CTL, ilk_debug_blc_pwm_cpu_ctl),
+	DEFINEREG2(BLC_PWM2_CPU_CTL2, ilk_debug_blc_pwm_cpu_ctl2),
+	DEFINEREG2(BLC_PWM2_CPU_CTL, ilk_debug_blc_pwm_cpu_ctl),
+	DEFINEREG2(BLC_MISC_CTL, hsw_debug_blc_misc_ctl),
+	//DEFINEREG2(BLC_PWM_PCH_CTL1, ibx_debug_blc_pwm_ctl1),
+	//DEFINEREG2(BLC_PWM_PCH_CTL2, ibx_debug_blc_pwm_ctl2),
+	
+	DEFINEREG2(_BXT_BLC_PWM_CTL1, _bxt_blc_pwm_ctl),
+	DEFINEREG2(_BXT_BLC_PWM_FREQ1, _bxt_blc_pwm_freq),
+	DEFINEREG2(_BXT_BLC_PWM_DUTY1, _bxt_blc_pwm_duty),
+	
+	DEFINEREG2(_BXT_BLC_PWM_CTL2, _bxt_blc_pwm_ctl),
+	DEFINEREG2(_BXT_BLC_PWM_FREQ2, _bxt_blc_pwm_freq),
+	DEFINEREG2(_BXT_BLC_PWM_DUTY2, _bxt_blc_pwm_duty),
+	
+	DEFINEREG2(UTIL_PIN_CTL, hsw_debug_util_pin_ctl),
+	
+	/* DEFINEREG2(PCH_PP_STATUS, i830_debug_pp_status),
+	DEFINEREG2(PCH_PP_CONTROL, ilk_debug_pp_control),
+	DEFINEREG(PCH_PP_ON_DELAYS),
+	DEFINEREG(PCH_PP_OFF_DELAYS),
+	DEFINEREG(PCH_PP_DIVISOR), */
+	
+	DEFINEREG(PIXCLK_GATE),
+	
+	DEFINEREG2(SDEISR, hsw_debug_sinterrupt),
+	
+	DEFINEREG(RC6_RESIDENCY_TIME)
+};
+
+//------------------------------------------------------------------------------
+
 static struct reg_debug i945gm_mi_regs[] = {
 	DEFINEREG(PGETBL_CTL),
 	DEFINEREG(PGTBL_ER),
@@ -3143,8 +3372,16 @@ DEFINE_FUNC_VOID(AppleIntelInfo::reportIntelRegs)
 {
 	getPCHDeviceID();
 
+	// outl(0xcf8, 0x80001010);
+	// UInt64 mmio = (inl(0xcfc) & 0x7FFFC00000); // mask bits 38-22
+	
 	outl(0xcf8, 0x80001010);
-	UInt64 mmio = (inl(0xcfc) & 0x7FFFC00000); // mask bits 38-22
+	UInt64 mmio = inl(0xcfc);
+	
+	outl(0xcf8, 0x80001014);
+	
+	// Need to combine BaseAddress0 and BaseAddress1
+	mmio = (((UInt64)inl(0xcfc) << 32) | (mmio & 0x7FFFC00000)); // mask bits 38-22
 
 	IOPhysicalAddress address = (IOPhysicalAddress)(mmio);
 
@@ -3166,7 +3403,13 @@ DEFINE_FUNC_VOID(AppleIntelInfo::reportIntelRegs)
 
 				IOLOG("\nIntel Register Data\n------------------------------------\nCPU_VGACNTRL...............: 0x%X\n", MMIO_READ32(CPU_VGACNTRL));
 
-				if (IS_SKYLAKE(devid))
+				if (IS_COFFEELAKE(devid))
+				{
+					IOLOG("IS_COFFEELAKE(devid)\n");
+					//intel_dump_regs(skylake_debug_regs);
+					intel_dump_regs(coffeelake_debug_regs);
+				}
+				else if (IS_SKYLAKE(devid))
 				{
 					IOLOG("IS_SKYLAKE(devid)\n");
 					intel_dump_regs(haswell_debug_regs);

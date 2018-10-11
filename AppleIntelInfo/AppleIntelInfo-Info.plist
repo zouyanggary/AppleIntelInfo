@@ -34,6 +34,8 @@
 			<string>IOResources</string>
 			<key>IOResourceMatch</key>
 			<string>IOKit</string>
+			<key>enableHWP</key>
+			<false/>
 			<key>logCStates</key>
 			<true/>
 			<key>logIGPU</key>
@@ -41,11 +43,9 @@
 			<key>logIPGStyle</key>
 			<true/>
 			<key>logIntelRegs</key>
-			<false/>
+			<true/>
 			<key>logMSRs</key>
 			<true/>
-			<key>enableHWP</key>
-			<false/>
 		</dict>
 	</dict>
 	<key>NSHumanReadableCopyright</key>
