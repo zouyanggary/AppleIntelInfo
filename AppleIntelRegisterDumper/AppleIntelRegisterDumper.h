@@ -3409,9 +3409,9 @@ DEFINE_FUNC_VOID(AppleIntelInfo::reportIntelRegs)
 					//intel_dump_regs(skylake_debug_regs);
 					intel_dump_regs(coffeelake_debug_regs);
 				}
-				else if (IS_SKYLAKE(devid))
+				else if (IS_SKYLAKE(devid) || IS_KABYLAKE(devid))
 				{
-					IOLOG("IS_SKYLAKE(devid)\n");
+					IOLOG("IS_SKYLAKE(devid) || IS_KABYLAKE(devid)\n");
 					intel_dump_regs(haswell_debug_regs);
 					intel_dump_regs(skylake_debug_regs);
 				}
